@@ -18,7 +18,7 @@ The dashboard provides:
 ## Power BI Data Model
 
 ### Data Fields
-![Data Fields](Sales-Targets-BI/images/model-data-fields.png)
+![Data Fields](images/model-data-fields.png)
 
 ### Table Relationships
 Model relationships:
