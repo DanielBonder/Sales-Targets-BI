@@ -148,7 +148,7 @@ This project is licensed under the MIT License – you are free to use, modify, 
 ## 👤 Author
 Daniel Bonder  
 📧 Email: danielbonder123@gmail.com  
-🔗 LinkedIn  
+🔗 [LinkedIn – Daniel Bonder](https://www.linkedin.com/in/daniel-bonder1/)
 
 ---
 
