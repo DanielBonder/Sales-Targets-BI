@@ -1,81 +1,84 @@
-# פרויקט BI: עמידה ביעדי מכירות חודשיים לעובדים
+# Sales Targets BI Dashboard
 
-פרויקט BI מקצה לקצה (Power BI) שמדמה טעינה יומית של מכירות, חיבור ליעדים חודשיים, חישוב אחוז עמידה יחסי לפי התקדמות החודש, והתחשבות בימי אי-עבודה (סופ"ש/חגים).
+דשבורד Power BI לניטור עמידה ביעדי מכירות חודשיים לעובדים, כולל חישוב עמידה יחסית לפי ימי עבודה, השוואה בין תקופות, והצגת KPI בזמן אמת.
 
-## דמו ותמונות
-צילומי מסך יופיעו בתיקיית `docs/images`. מומלץ להוסיף GIF קצר של ניווט בדשבורד.
+---
 
-## קבצי עזר (מהמרצה)
-- `Example_External_Data.xlsx` — טבלת יעדים חודשיים/נתוני חוץ לדוגמה.
-- `timedimension.xlsx` / `dim_date.xlsx` — עזר לבניית מימד זמן.
-- `קבצי עזר ליצירת הפרוייקט.xlsx` — אוגד קבצי עזר.
+## מבט כללי על הדשבורד
+הדשבורד מציג:
+- KPI של ימי עבודה שעברו מתוך החודש
+- אחוז עמידה ביעד מכירות חודשי בהתחשב בהתקדמות החודש
+- השוואת ביצועים לתקופות קודמות
+- חיזוי קצב מכירות שנתי
 
-> שימו אותם תחת `data/raw/` או `docs/demo/` לפי הצורך. אל תעלו נתונים רגישים.
+![מבט כללי](docs/images/dashboard-overview.png)
 
-## מבנה נתונים ומודל
-- **FactDummySale** (מכירות בפועל) — מסונכרן לשנת 2025 ע״י הסטה בשנים.
-- **DimEmployee** — מימד עובדים.
-- **Dim_Date** — מימד זמן יומי עם סימון ימי עבודה/חגים.
-- **Targets** (Example_External_Data) — יעדים חודשיים לפי עובד.
+---
 
-יחסים: `Dim_Date[Date] ↔ FactDummySale[NewOrderDate]`, `DimEmployee ↔ FactDummySale`, ו-`Targets(start_of_month) ↔ Dim_Date[StartOfMonth]` (או באמצעות טבלת גישור `factSalesVsTargets`).
+## מבנה המודל ב-Power BI
 
-## שלבי Power Query (תקציר לביצוע/שחזור)
-1. **פרמטרים**
-   - `P_FileName` (טקסט) — שם קובץ חלק מהפרויקט.
-   - `P_Calendar_Start` (תאריך) — תאריך התחלה לבניית מימד הזמן.
+### שדות הנתונים
+![שדות הנתונים](docs/images/model-data-fields.png)
 
-2. **ייבוא טבלאות**: `FactDummySale`, `DimEmployee`, `Example_External_Data`.
+### קשרים בין הטבלאות
+הקשרים בין הטבלאות במודל:
+- `dimemployee[EmployeeKey]` ↔ `factsalesVStargets[EmployeeNum]`
+- `dim_date[Date_Key]` ↔ `factsalesVStargets[start_of_month_22_23]`
 
-3. **סימון ימי עבודה** (`full_working_days`):
-   - שרשור `NOT_WORKING_DAY` ו-`HOLIDAY` לעמודה `merge_not_working_days` (ללא מפריד).
-   - החלפת `XX` ב-`X` (אות גדולה).
-   - הבטחת טיפוס `date` לשדה `date`.
+![תרשים קשרים](docs/images/model-relationships.png)
 
-4. **ניקוי/התאמת מכירות** (`FactDummySale`):
-   - יצירת `NewOrderDate = Date.AddYears([OrderDate], 12)` ואז טיפוס `date`.
-   - Merge עם `FULL_WORKING_DAYS` על `NewOrderDate`↔`date` ו-Semi-Join להשארת ימי עבודה בלבד (סינון `blank`).
-   - סינון דינמי עד **היום הנוכחי**: `DateTime.Date(DateTime.LocalNow())` ב־Advanced Editor.
+---
 
-5. **Targets**:
-   - `choose columns` להסרת עמודות מיותרות.
-   - יצירת `start_of_month = #date([Year],[Month],1)` וטיפוס `date`.
-   - מחיקת `Year`/`Month` המקוריים אם לא נדרשים.
+## מקורות נתונים
+- **FactDummySale** – טבלת מכירות בפועל (מותאמת לשנת 2025 ע"י הסטת שנים)
+- **DimEmployee** – מימד עובדים
+- **Dim_Date** – מימד זמן יומי עם סימון ימי עבודה וחגים
+- **Targets** – יעדי מכירות חודשיים לכל עובד
 
-6. **שלב עזר** `stg_target_actual_sales` (Reference מ-`FactDummySale`):
-   - `Start of Month` ל-`NewOrderDate`.
-   - `Group By` לפי `EmployeeKey` ו-`StartOfMonth` לסכום `SalesAmount`.
-   - `All Rows` כדי להפיק `empDistinctDaysCount` (ספירת ימי עבודה ייחודיים בפועל).
+---
 
-7. **`factSalesVsTargets`**:
-   - Reference מ-`Targets`, Join ל-`stg_target_actual_sales`.
-   - Expand לשדות `SalesAmount`, `empDistinctDaysCount`.
-   - החלפת `null` ב-`0` לשדות אלה.
+## שלבי Power Query (תקציר)
+1. ייבוא טבלאות: FactDummySale, DimEmployee, Example_External_Data
+2. סימון ימי עבודה באמצעות שילוב עמודות NOT_WORKING_DAY ו-HOLIDAY
+3. התאמת תאריכים ל-2025 בעזרת Date.AddYears
+4. סינון לפי ימי עבודה בלבד והגבלה עד לתאריך הנוכחי (DateTime.LocalNow)
+5. המרת יעדים חודשיים לתחילת החודש (start_of_month)
+6. יצירת טבלאות עזר לקיבוץ מכירות חודשיות ומספר ימי עבודה בפועל
+7. חיבור יעדים מול מכירות בפועל בטבלת factsalesVStargets
+8. טיפול בערכי NULL והמרתם ל-0
 
-8. **טעינה למודל**:
-   - ביטול `Enable Load` לטבלאות ביניים: `full_working_days`, `stg_target_actual_sales`, `FactDummySale` (מקורית אם יש עותק מעובד), `Targets` (אם נשענים על טבלה משולבת).
-   - טעינת מודל ובדיקת יחסים.
+---
 
-## מדדים (DAX) מוצעים
-> צרפו את המדדים ישירות בקובץ PBIX.
-- `Total Sales := SUM(FactDummySale[SalesAmount])`
-- `Working Days in Month := COUNTROWS(FILTER(Dim_Date, Dim_Date[IsWorkingDay] = TRUE() && SAMEPERIODMONTH(Dim_Date[Date], SELECTEDVALUE(Dim_Date[Date]))))`
-- `Elapsed Working Days := COUNTROWS(FILTER(Dim_Date, Dim_Date[IsWorkingDay] = TRUE() && Dim_Date[Date] <= TODAY() && MONTH(Dim_Date[Date]) = MONTH(TODAY()) && YEAR(Dim_Date[Date]) = YEAR(TODAY())))`
-- `Relative Target Attainment := DIVIDE([Total Sales], [Target for Period] * DIVIDE([Elapsed Working Days], [Working Days in Month]))`
-- `YoY Sales := CALCULATE([Total Sales], DATEADD(Dim_Date[Date], -1, YEAR))`
+## מדדי DAX עיקריים
+```DAX
+Total Sales := SUM(FactDummySale[SalesAmount])
 
-התאימו את שמות העמודות/טבלאות למה שיש בקובץ שלכם בפועל.
+Target Amount (Month) :=
+VAR _start = MIN(Dim_Date[StartOfMonth])
+RETURN CALCULATE(
+    SUM(Targets[TargetAmount]),
+    Dim_Date[StartOfMonth] = _start
+)
 
-## איך לשחזר/להריץ
-1. הניחו את קבצי הדמו תחת `data/raw/` ופתחו את `powerbi/report.pbix` (לא מצורף כאן).
-2. עדכנו נתיבי מקורות ב-Power Query לפי המיקום המקומי.
-3. רעננו את המודל ובדקו את דפי הדשבורד (KPI חודשי, עמידה יחסית, פילוחים לעובד/חודש).
+Working Days in Month :=
+CALCULATE(
+    COUNTROWS(Dim_Date),
+    Dim_Date[IsWorkingDay] = TRUE(),
+    ALLEXCEPT(Dim_Date, Dim_Date[Year], Dim_Date[MonthNumber])
+)
 
-## מבנה הרפו
-ראו את עץ התיקיות ואת קבצי ההגדרה (`.gitignore`, `.gitattributes`, CI).
+Elapsed Working Days (to Today) :=
+CALCULATE(
+    COUNTROWS(Dim_Date),
+    Dim_Date[IsWorkingDay] = TRUE(),
+    Dim_Date[Date] <= TODAY(),
+    ALLEXCEPT(Dim_Date, Dim_Date[Year], Dim_Date[MonthNumber])
+)
 
-## רישיון
-MIT (ראו `LICENSE`).
+Relative Target Attainment :=
+DIVIDE(
+  [Total Sales],
+  [Target Amount (Month)] * DIVIDE([Elapsed Working Days (to Today)], [Working Days in Month])
+)
 
-## יוצר/ת קשר
-דניאל בונדר — הוסיפו LinkedIn/Email לפי הצורך.
+YoY Sales := CALCULATE([Total Sales], DATEADD(Dim_Date[Date], -1, YEAR))
