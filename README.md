@@ -11,14 +11,14 @@ The dashboard provides:
 - Comparison of performance against previous periods
 - Annual sales pace forecast
 
-![Dashboard Overview](docs/images/dashboard-overview.png)
+![Dashboard Overview](docs/images/model-dashboard.png)
 
 ---
 
 ## Power BI Data Model
 
 ### Data Fields
-![Data Fields](docs/images/model-data-fields.png)
+![Data Fields](docs/images/model-data.png)
 
 ### Table Relationships
 Model relationships:
@@ -30,15 +30,17 @@ Model relationships:
 ---
 
 ## Data Sources
-- **FactDummySale** – Actual sales transactions (shifted to 2025 using Date.AddYears)
-- **DimEmployee** – Employee dimension
-- **Dim_Date** – Daily date dimension with working day and holiday indicators
-- **Targets** – Monthly sales targets per employee
+All data sources are provided as Excel files located in `data/raw/` and loaded into Power BI via Power Query:
+
+- **FactDummySale.xlsx** – Actual sales transactions (shifted to 2025 using `Date.AddYears`)
+- **DimEmployee.xlsx** – Employee dimension
+- **Dim_Date.xlsx** – Daily date dimension with working day and holiday indicators
+- **Targets.xlsx** – Monthly sales targets per employee
 
 ---
 
 ## Power Query Steps (Summary)
-1. Import tables: `FactDummySale`, `DimEmployee`, `Example_External_Data`
+1. Import Excel files: `FactDummySale.xlsx`, `DimEmployee.xlsx`, `Targets.xlsx`
 2. Mark working days by merging `NOT_WORKING_DAY` and `HOLIDAY` columns
 3. Adjust transaction dates to 2025 with `Date.AddYears`
 4. Filter only working days and limit data to the current date (`DateTime.LocalNow`)
