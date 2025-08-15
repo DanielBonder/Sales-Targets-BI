@@ -1,55 +1,55 @@
 # Sales Targets BI Dashboard
 
-דשבורד Power BI לניטור עמידה ביעדי מכירות חודשיים לעובדים, כולל חישוב עמידה יחסית לפי ימי עבודה, השוואה בין תקופות, והצגת KPI בזמן אמת.
+A Power BI dashboard designed to monitor employees’ monthly sales performance against targets, including relative attainment calculations based on working days, period comparisons, and real-time KPI updates.
 
 ---
 
-## מבט כללי על הדשבורד
-הדשבורד מציג:
-- KPI של ימי עבודה שעברו מתוך החודש
-- אחוז עמידה ביעד מכירות חודשי בהתחשב בהתקדמות החודש
-- השוואת ביצועים לתקופות קודמות
-- חיזוי קצב מכירות שנתי
+## Dashboard Overview
+The dashboard provides:
+- KPI showing the number of working days completed in the current month
+- Monthly sales target attainment percentage adjusted to the month’s progress
+- Comparison of performance against previous periods
+- Annual sales pace forecast
 
-![מבט כללי](docs/images/dashboard-overview.png)
+![Dashboard Overview](docs/images/dashboard-overview.png)
 
 ---
 
-## מבנה המודל ב-Power BI
+## Power BI Data Model
 
-### שדות הנתונים
-![שדות הנתונים](docs/images/model-data-fields.png)
+### Data Fields
+![Data Fields](docs/images/model-data-fields.png)
 
-### קשרים בין הטבלאות
-הקשרים בין הטבלאות במודל:
+### Table Relationships
+Model relationships:
 - `dimemployee[EmployeeKey]` ↔ `factsalesVStargets[EmployeeNum]`
 - `dim_date[Date_Key]` ↔ `factsalesVStargets[start_of_month_22_23]`
 
-![תרשים קשרים](docs/images/model-relationships.png)
+![Relationships Diagram](docs/images/model-relationships.png)
 
 ---
 
-## מקורות נתונים
-- **FactDummySale** – טבלת מכירות בפועל (מותאמת לשנת 2025 ע"י הסטת שנים)
-- **DimEmployee** – מימד עובדים
-- **Dim_Date** – מימד זמן יומי עם סימון ימי עבודה וחגים
-- **Targets** – יעדי מכירות חודשיים לכל עובד
+## Data Sources
+- **FactDummySale** – Actual sales transactions (shifted to 2025 using Date.AddYears)
+- **DimEmployee** – Employee dimension
+- **Dim_Date** – Daily date dimension with working day and holiday indicators
+- **Targets** – Monthly sales targets per employee
 
 ---
 
-## שלבי Power Query (תקציר)
-1. ייבוא טבלאות: FactDummySale, DimEmployee, Example_External_Data
-2. סימון ימי עבודה באמצעות שילוב עמודות NOT_WORKING_DAY ו-HOLIDAY
-3. התאמת תאריכים ל-2025 בעזרת Date.AddYears
-4. סינון לפי ימי עבודה בלבד והגבלה עד לתאריך הנוכחי (DateTime.LocalNow)
-5. המרת יעדים חודשיים לתחילת החודש (start_of_month)
-6. יצירת טבלאות עזר לקיבוץ מכירות חודשיות ומספר ימי עבודה בפועל
-7. חיבור יעדים מול מכירות בפועל בטבלת factsalesVStargets
-8. טיפול בערכי NULL והמרתם ל-0
+## Power Query Steps (Summary)
+1. Import tables: `FactDummySale`, `DimEmployee`, `Example_External_Data`
+2. Mark working days by merging `NOT_WORKING_DAY` and `HOLIDAY` columns
+3. Adjust transaction dates to 2025 with `Date.AddYears`
+4. Filter only working days and limit data to the current date (`DateTime.LocalNow`)
+5. Convert monthly targets to first-of-month dates (`start_of_month`)
+6. Create helper table `stg_target_actual_sales` for monthly aggregation of sales and distinct working days
+7. Join targets with actual sales in `factsalesVStargets`
+8. Replace NULL values with 0 for numeric fields
 
 ---
 
-## מדדי DAX עיקריים
+## Key DAX Measures
 ```DAX
 Total Sales := SUM(FactDummySale[SalesAmount])
 
