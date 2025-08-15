@@ -5,7 +5,7 @@ A Power BI dashboard designed to monitor employees’ monthly sales performance 
 ---
 
 ## 📂 Download the Dashboard
-[**Click here to download the Sales Targets BI PBIX file**](PATH/TO/YOUR/PowerBI/PROJECT.pbix)  
+[**Click here to download the Sales Targets BI PBIX file**](PowerBI/PROJECT.pbix)  
 *(Replace `PATH/TO/YOUR` with the actual GitHub path to the PBIX file in your repository.)*
 
 ---
