@@ -25,7 +25,7 @@ Model relationships:
 - `dimemployee[EmployeeKey]` ↔ `factsalesVStargets[EmployeeNum]`
 - `dim_date[Date_Key]` ↔ `factsalesVStargets[start_of_month_22_23]`
 
-![Relationships Diagram](docs/images/model-relationships.png)
+![Relationships Diagram](images/model-relationships.png)
 
 ---
 
