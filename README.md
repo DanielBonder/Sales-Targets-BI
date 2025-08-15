@@ -1,11 +1,16 @@
 # Sales Targets BI Dashboard
 
-A **Power BI** dashboard designed to monitor and analyze employees’ monthly sales performance against targets.  
-It includes real-time KPIs, relative attainment calculations based on working days, comparisons with previous periods, and annual pace forecasting.
+A Power BI dashboard designed to monitor employees’ monthly sales performance against targets, including relative attainment calculations based on working days, period comparisons, and real-time KPI updates.
 
 ---
 
-## 📊 Dashboard Overview
+## 📂 Download the Dashboard
+[**Click here to download the Sales Targets BI PBIX file**](PATH/TO/YOUR/Sales-Targets-BI.pbix)  
+*(Replace `PATH/TO/YOUR` with the actual GitHub path to the PBIX file in your repository.)*
+
+---
+
+## Dashboard Overview
 The dashboard provides:
 - KPI showing the number of working days completed in the current month
 - Monthly sales target attainment percentage adjusted to the month’s progress
@@ -16,7 +21,7 @@ The dashboard provides:
 
 ---
 
-## 🗂 Power BI Data Model
+## Power BI Data Model
 
 ### Data Fields
 ![Data Fields](images/model-data-fields.png)
@@ -30,17 +35,17 @@ Model relationships:
 
 ---
 
-## 📂 Data Sources
-All data sources are provided as Excel files located in `data/raw/` and loaded into Power BI via **Power Query**:
+## Data Sources
+All data sources are provided as Excel files located in `data/raw/` and loaded into Power BI via Power Query:
 
 - **FactDummySale.xlsx** – Actual sales transactions (shifted to 2025 using `Date.AddYears`)
-- **DimEmployee.xlsx** – Employee dimension table
+- **DimEmployee.xlsx** – Employee dimension
 - **Dim_Date.xlsx** – Daily date dimension with working day and holiday indicators
 - **Targets.xlsx** – Monthly sales targets per employee
 
 ---
 
-## 🔄 Power Query ETL Process (Summary)
+## Power Query Steps (Summary)
 1. Import Excel files: `FactDummySale.xlsx`, `DimEmployee.xlsx`, `Targets.xlsx`
 2. Mark working days by merging `NOT_WORKING_DAY` and `HOLIDAY` columns
 3. Adjust transaction dates to 2025 with `Date.AddYears`
@@ -52,10 +57,9 @@ All data sources are provided as Excel files located in `data/raw/` and loaded i
 
 ---
 
-## 📐 Key DAX Measures
+## Key DAX Measures
 ```DAX
-Total Sales :=
-SUM(FactDummySale[SalesAmount])
+Total Sales := SUM(FactDummySale[SalesAmount])
 
 Target Amount (Month) :=
 VAR _start = MIN(Dim_Date[StartOfMonth])
@@ -82,9 +86,7 @@ CALCULATE(
 Relative Target Attainment :=
 DIVIDE(
   [Total Sales],
-  [Target Amount (Month)] *
-  DIVIDE([Elapsed Working Days (to Today)], [Working Days in Month])
+  [Target Amount (Month)] * DIVIDE([Elapsed Working Days (to Today)], [Working Days in Month])
 )
 
-YoY Sales :=
-CALCULATE([Total Sales], DATEADD(Dim_Date[Date], -1, YEAR))
+YoY Sales := CALCULATE([Total Sales], DATEADD(Dim_Date[Date], -1, YEAR))
