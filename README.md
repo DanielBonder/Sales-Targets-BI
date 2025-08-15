@@ -9,6 +9,8 @@ Includes real-time KPIs, relative attainment based on working days, period-over-
   </a>
   <img alt="Made with Power BI" src="https://img.shields.io/badge/Made%20with-Power%20BI-yellow?logo=power-bi&logoColor=white" />
   <img alt="Data Sources: Excel" src="https://img.shields.io/badge/Data%20Sources-Excel-green?logo=microsoft-excel&logoColor=white" />
+  <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-lightgrey" />
+  <img alt="Last Commit" src="https://img.shields.io/github/last-commit/DanielBonder/Sales-Targets-BI" />
 </p>
 
 ---
@@ -107,3 +109,48 @@ DIVIDE(
 
 YoY Sales :=
 CALCULATE([Total Sales], DATEADD(Dim_Date[Date], -1, YEAR))
+```
+
+---
+
+## 🚀 Getting Started
+1. Download the PBIX file using the button at the top.
+2. Open the file with Power BI Desktop (latest version recommended).
+3. Place Excel source files in the `data/raw/` directory (or update paths in Power Query).
+4. Click Refresh to load the latest data.
+
+---
+
+## 📂 Project Structure
+```
+Sales-Targets-BI/
+├─ PowerBI/
+│  └─ PROJECT.pbix
+├─ images/
+│  ├─ model-Deshborad.png
+│  ├─ model-data-fields.png
+│  └─ model-relationships.png
+├─ data/
+│     ├─ FactDummySale.xlsx
+│     ├─ DimEmployee.xlsx
+│     ├─ Dim_Date.xlsx
+│     └─ Targets.xlsx
+└─ README.md
+```
+
+---
+
+## 📄 License
+This project is licensed under the MIT License – you are free to use, modify, and distribute with attribution.
+
+---
+
+## 👤 Author
+Daniel Bonder  
+📧 Email: your.email@example.com  
+🔗 LinkedIn  
+
+---
+
+## 🏷 Tags
+Power BI · DAX · Business Intelligence · Sales Analytics · Data Modeling
