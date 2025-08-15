@@ -11,7 +11,7 @@ The dashboard provides:
 - Comparison of performance against previous periods
 - Annual sales pace forecast
 
-![Dashboard Overview](docs/images/model-dashboard.png)
+![Dashboard Overview](images/model-Deshborad.png)
 
 ---
 
